@@ -7,20 +7,22 @@ namespace TechJobsConsole
 {
     class JobData
     {
-        static List<Dictionary<string, string>> AllJobs = new List<Dictionary<string, string>>();
+        static List<Dictionary<string, string>> AllJobs = new List<Dictionary<string, string>>();//list of dictionaries 
         static bool IsDataLoaded = false;
+       
 
         public static List<Dictionary<string, string>> FindAll()
         {
             LoadData();
-            return AllJobs;
+            List<Dictionary<string, string>> AllJobsCopy = new List<Dictionary<string, string>>(AllJobs);
+            return AllJobsCopy;
         }
 
         /*
          * Returns a list of all values contained in a given column,
          * without duplicates. 
          */
-        public static List<string> FindAll(string column)
+        public static List<string> FindAll(string column)//value is the column data
         {
             LoadData();
 
@@ -48,8 +50,9 @@ namespace TechJobsConsole
             foreach (Dictionary<string, string> row in AllJobs)
             {
                 string aValue = row[column];
+                string loweraValue = aValue.ToLower();
 
-                if (aValue.Contains(value))
+                if (loweraValue.Contains(value.ToLower()))
                 {
                     jobs.Add(row);
                 }
@@ -69,14 +72,14 @@ namespace TechJobsConsole
                 return;
             }
 
-            List<string[]> rows = new List<string[]>();
+            List<string[]> rows = new List<string[]>();//new list corresponding to info in row of CSV
 
-            using (StreamReader reader = File.OpenText("job_data.csv"))
+            using (StreamReader reader = File.OpenText("job_data.csv"))//imports CSV data
             {
-                while (reader.Peek() >= 0)
+                while (reader.Peek() >= 0)//keeps reading the CSV file until there is no more data (i.e returning -1)
                 {
-                    string line = reader.ReadLine();
-                    string[] rowArrray = CSVRowToStringArray(line);
+                    string line = reader.ReadLine();//reads a line and returns the next line. null if end is reached
+                    string[] rowArrray = CSVRowToStringArray(line);//Takes the string and turns it into an array seperted by commas
                     if (rowArrray.Length > 0)
                     {
                         rows.Add(rowArrray);
@@ -84,8 +87,8 @@ namespace TechJobsConsole
                 }
             }
 
-            string[] headers = rows[0];
-            rows.Remove(headers);
+            string[] headers = rows[0];//grabs the headers of name,employer,location,position type,core competency
+            rows.Remove(headers); //removes the headers from the csv data. Just a list of jobs
 
             // Parse each row array into a more friendly Dictionary
             foreach (string[] row in rows)
@@ -138,5 +141,31 @@ namespace TechJobsConsole
 
             return rowValues.ToArray();
         }
+        public static List<Dictionary<string, string>> FindByValue(string searchTerm)
+        {
+
+            // load data, if not already loaded
+            LoadData();
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> job in AllJobs)
+            {
+                foreach (KeyValuePair<string, string> kvp in job)
+                {
+                    //string key = kvp.Key;
+                    string value = kvp.Value;
+                    string lowerValue = value.ToLower();
+
+                    if (lowerValue.Contains(searchTerm.ToLower()))
+                    {
+                        jobs.Add(job);
+                    }
+                }
+            }
+
+            return jobs;
+        }
     }
 }
+       
+    

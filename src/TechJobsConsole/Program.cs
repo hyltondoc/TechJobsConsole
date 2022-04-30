@@ -41,6 +41,7 @@ namespace TechJobsConsole
                     else
                     {
                         List<string> results = JobData.FindAll(columnChoice);
+                        results.Sort();
 
                         Console.WriteLine("\n*** All " + columnChoices[columnChoice] + " Values ***");
                         foreach (string item in results)
@@ -63,7 +64,17 @@ namespace TechJobsConsole
                     // Fetch results
                     if (columnChoice.Equals("all"))
                     {
-                        Console.WriteLine("Search all fields not yet implemented.");
+                        searchResults = JobData.FindByValue(searchTerm);
+                        if (searchResults.Count > 0)
+                        {
+                            PrintJobs(searchResults);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Search Term Not Found");
+                        }
+                        
+
                     }
                     else
                     {
@@ -81,7 +92,7 @@ namespace TechJobsConsole
         {
             int choiceIdx;
             bool isValidChoice = false;
-            string[] choiceKeys = new string[choices.Count];
+            string[] choiceKeys = new string[choices.Count];//creates a new string of keys based on the length of the dictionary
 
             int i = 0;
             foreach (KeyValuePair<string, string> choice in choices)
@@ -118,7 +129,27 @@ namespace TechJobsConsole
 
         private static void PrintJobs(List<Dictionary<string, string>> someJobs)
         {
-            Console.WriteLine("PrintJobs is not implemented yet");
+            if (!(someJobs.Count == 0))
+            {
+                foreach (Dictionary<string, string> job in someJobs)
+                {
+                    //if (someJobs.Count > 0)
+                    //{
+                    Console.WriteLine("*****");
+                    foreach (KeyValuePair<string, string> jobKeyValue in job)
+                    {
+                        Console.WriteLine($"{jobKeyValue.Key}: {jobKeyValue.Value}");
+                    }
+                    Console.WriteLine("*****\n");
+                    //}
+
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid Search Term. No search results.");
+            }
+            //Console.WriteLine("PrintJobs is not implemented yet");
         }
     }
 }
